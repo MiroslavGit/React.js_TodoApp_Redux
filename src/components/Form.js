@@ -1,26 +1,62 @@
-import React from 'react';
-import TodoList from './TodoList'
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { addTodo } from "../redux/todoSlice";
 
 class Form extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: ""
+        }
+    }
+
     render() {
         return (
             <div>
-                <form onSubmit={this.props.submit} className="wrapper">
+                <form onSubmit={this.handleSubmit} className="wrapper">
                     <input 
                         id="input"
                         type="text"
-                        onChange={this.props.change}
-                        value={this.props.valueApp}
+                        onChange={this.handleChange}
+                        value={this.state.value}
                     />
                     <button 
                         className="add" 
-                        id="add">
-                        Add #{this.props.numbersOfItems + 1} 
+                        id="add"
+                        onClick={this.getTodos}>
+                        Add #{this.props.todos.todos.length + 1} 
                     </button>
                 </form>
             </div>
         );
-      }
+    }
+
+    handleChange = (e) => {
+        this.setState({
+            value: e.target.value
+        })
+    }
+
+    handleSubmit = (e) => {
+        e.preventDefault();
+        this.props.addTodo(this.state.value)
+    }
+
+
 }
 
-export default Form;
+const mapStateToProps = (state) =>{
+    return {
+        todos: state.todos
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+      addTodo: (text) => dispatch(addTodo(text)),
+    }
+}
+
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form);
